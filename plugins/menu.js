@@ -86,8 +86,8 @@ ${menu.fun || '│ (No commands found)'}
                     forwardingScore: 999,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363402507750390@newsletter',
-                        newsletterName: 'Lite XD',
+                        newsletterJid: '120363203776689544@newsletter',
+                        newsletterName: 'AGNI',
                         serverMessageId: 143
                     }
                 }
