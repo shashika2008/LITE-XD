@@ -139,7 +139,7 @@ https://github.com/XdKing2/LITE-XD
 > © ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟᴠɪɴ ᴋɪɴɢ 🇿🇼`;
     conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/lm4a0b.jpg` }, caption: up })
 
-          const channelJid = "120363402507750390@newsletter"
+          const channelJid = "120363203776689544@newsletter"
           try {
             await conn.newsletterFollow(channelJid)
             console.log(`Successfully followed channel: ${channelJid}`)
