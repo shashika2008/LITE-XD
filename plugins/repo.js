@@ -1,67 +1,71 @@
-const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch');
-const config = require('../settings');
 const { lite } = require('../lite');
+const { Sticker, StickerTypes } = require("wa-sticker-formatter");
+const { downloadMediaMessage } = require("../lib/msg.js"); // Adjust the path as needed
 
-lite({
-    pattern: "repo",
-    alias: ["sc", "script", "info"],
-    desc: "Fetch information about this GitHub repository.",
-    react: "📂",
-    category: "main",
-    filename: __filename
-}, async (conn, mek, m, { from, reply }) => {
-    const githubRepoURL = 'https://github.com/XdKing2/LITE-XD';
-
-    try {
-        const [, username, repoName] = githubRepoURL.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-        const res = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
-        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-
-        const data = await res.json();
-
-        const caption = `
-╭━━〔 🔎 *Repository Info* 〕━━⬣
-┃ 📦 *Bot Name:* ${data.name}
-┃ 👑 *Owner:* ${data.owner.login}
-┃ ⭐ *Stars:* ${data.stargazers_count}
-┃ 🍴 *Forks:* ${data.forks_count}
-┃ 🔗 *Link:* ${data.html_url}
-┃ 📝 *Description:* ${data.description || 'No description'}
-╰━━━━━━━━━━━━━━━━━━━━⬣
-✨ *Don't forget to ★ and fork!*
-🔧 ${config.DESCRIPTION}
-        `.trim();
-
-        const contextInfo = {
-            mentionedJid: [m.sender],
-            forwardingScore: 999,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-                newsletterJid: '120363402507750390@newsletter',
-                newsletterName: 'Malvin Tech',
-                serverMessageId: 143
-            }
-        };
-
-        await conn.sendMessage(from, {
-            image: { url: config.MENU_IMAGE_URL },
-            caption,
-            contextInfo
-        }, { quoted: mek });
-
-        const audioPath = path.join(__dirname, '../all/menu.m4a');
-        await conn.sendMessage(from, {
-            audio: fs.readFileSync(audioPath),
-            mimetype: 'audio/mp4',
-            ptt: true,
-            contextInfo
-        }, { quoted: mek });
-
-    } catch (error) {
-        console.error("Repo Command Error:", error);
-        reply("❌ *Failed to fetch repository info.*\nPlease try again later.");
+lite(
+  {
+    pattern: "sticker",
+    alias: ["s", "stick"],
+    react: "🔖",
+    desc: "Convert an image to a sticker",
+    category: "utility",
+    filename: __filename,
+  },
+  async (
+    malvin,
+    mek,
+    m,
+    {
+      from,
+      quoted,
+      body,
+      isCmd,
+      command,
+      args,
+      q,
+      isGroup,
+      sender,
+      senderNumber,
+      botNumber2,
+      botNumber,
+      pushname,
+      isMe,
+      isOwner,
+      groupMetadata,
+      groupName,
+      participants,
+      groupAdmins,
+      isBotAdmins,
+      isAdmins,
+      reply,
     }
-});
+  ) => {
+    try {
+      // Ensure the message contains an image or video to convert to a sticker
+      if (!quoted || !(quoted.imageMessage || quoted.videoMessage)) {
+        return reply(
+          "Please reply to an image or video to convert it to a sticker."
+        );
+      }
+
+      // Download the media from the quoted message
+      const media = await downloadMediaMessage(quoted, "stickerInput");
+      if (!media) return reply("Failed to download the media. Try again!");
+
+      // Create the sticker from the media
+      const sticker = new Sticker(media, {
+        pack: "agni", // Sticker pack name
+        author: "ᴍᴀʟᴠɪɴ ᴛᴇᴄʜ🪀", // Sticker author name
+        type: StickerTypes.FULL, // Sticker type (FULL or CROPPED)
+        quality: 50, // Quality of the output sticker (0–100)
+      });
+
+      const buffer = await sticker.toBuffer();
+      await malvin.sendMessage(from, { sticker: buffer }, { quoted: mek });
+    } catch (e) {
+      console.error(e);
+      reply(`Error: ${e.message || e}`);
+    }
+  }
+);
+            
