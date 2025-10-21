@@ -8,7 +8,7 @@ lite(
     alias: ["s", "stick"],
     react: "🔖",
     desc: "Convert an image to a sticker",
-    category: "utility",
+    category: "convert",
     filename: __filename,
   },
   async (
@@ -54,7 +54,7 @@ lite(
 
       // Create the sticker from the media
       const sticker = new Sticker(media, {
-        pack: "agni", // Sticker pack name
+        pack: "𝗠𝗔𝗟𝗨 𝗫𝗗", // Sticker pack name
         author: "ᴍᴀʟᴠɪɴ ᴛᴇᴄʜ🪀", // Sticker author name
         type: StickerTypes.FULL, // Sticker type (FULL or CROPPED)
         quality: 50, // Quality of the output sticker (0–100)
